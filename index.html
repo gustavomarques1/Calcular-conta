@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calculadora de Divisão de Conta</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      #result {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Calculadora de Divisão de Conta</h1>
+
+    <div class="form-group">
+      <label for="clientes">Clientes:</label>
+      <input
+        type="text"
+        id="clientes"
+        placeholder="Digite os nomes dos clientes separados por vírgula"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="produtos">Produtos:</label>
+      <input
+        type="text"
+        id="produtos"
+        placeholder="Digite os produtos e seus preços separados por vírgula. Ex: Pizza:42.00, Refrigerante:8.00"
+      />
+    </div>
+
+    <button onclick="calcularDivisao()">Calcular</button>
+
+    <div id="result"></div>
+
+    <script>
+      function calcularDivisao() {
+        var clientesInput = document.getElementById("clientes");
+        var produtosInput = document.getElementById("produtos");
+        var resultDiv = document.getElementById("result");
+
+        var clientes = clientesInput.value.split(",");
+
+        var produtos = produtosInput.value.split(",").map(function (item) {
+          var parts = item.split(":");
+          return {
+            nome: parts[0].trim(),
+            preco: parseFloat(parts[1].trim()),
+            consumidores: clientes.slice(), // Cria uma cópia do array de clientes
+          };
+        });
+
+        var valorTotal = produtos.reduce(function (acc, produto) {
+          return acc + produto.preco;
+        }, 0);
+
+        var taxaServico = valorTotal * 0.1;
+
+        var valorPorCliente = {};
+
+        clientes.forEach(function (cliente) {
+          var produtosConsumidos = produtos.filter(function (produto) {
+            return produto.consumidores.includes(cliente);
+          });
+
+          var valorConsumido = produtosConsumidos.reduce(function (
+            acc,
+            produto
+          ) {
+            return acc + produto.preco;
+          },
+          0);
+
+          valorPorCliente[cliente] =
+            valorConsumido + (cliente === "Maria" ? taxaServico : 0);
+        });
+
+        var resultHtml = "";
+
+        for (var cliente in valorPorCliente) {
+          resultHtml +=
+            "<p>" +
+            cliente +
+            ": R$ " +
+            valorPorCliente[cliente].toFixed(2) +
+            "</p>";
+        }
+
+        resultDiv.innerHTML = resultHtml;
+      }
+    </script>
+  </body>
+</html>
